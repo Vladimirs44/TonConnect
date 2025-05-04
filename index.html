@@ -1,16 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>HELLOKITTY</title>
-		<script src="https://unpkg.com/@tonconnect/ui@0.0.9/dist/tonconnect-ui.min.js"></script>
-	</head>
-	<body>
-		<h1>AAAAAAAAAAAAAAAAA</h1>
-		<h1 id="connect">Connect Wallet</h1>
-		<script>
-			const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-				manifestUrl: 'https://vladimirs44.github.io/tonconnect-manifest.json',
-				buttonRootId: 'connect'
-			});
-		</script>
-	</body>
+<head>
+  <title>HELLOKITTY</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Подключение Telegram Web Apps API -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Подключение TonConnect UI -->
+  <script src="https://unpkg.com/@tonconnect/ui@0.0.9/dist/tonconnect-ui.min.js"></script>
+  <style>
+    body {
+      background-color: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    #connect {
+      font-size: 18px;
+      padding: 10px 20px;
+      background-color: var(--tg-theme-button-color, #0088cc);
+      color: var(--tg-theme-button-text-color, #ffffff);
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 20px;
+      }
+      #connect {
+        font-size: 16px;
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>HELLOKITTY Mini App</h1>
+  <h1 id="connect">Connect Wallet</h1>
+
+  <script>
+    // Инициализация Telegram Web App
+    const tg = window.Telegram.WebApp;
+    tg.ready(); // Сообщаем Telegram, что приложение готово
+
+    // Адаптация темы Telegram
+    document.body.style.backgroundColor = tg.themeParams.bg_color || '#ffffff';
+    document.body.style.color = tg.themeParams.text_color || '#000000';
+    document.querySelector('#connect').style.backgroundColor = tg.themeParams.button_color || '#0088cc';
+    document.querySelector('#connect').style.color = tg.themeParams.button_text_color || '#ffffff';
+
+    // Настройка главной кнопки Telegram (опционально)
+    tg.MainButton.text = "Подтвердить";
+    tg.MainButton.show();
+    tg.MainButton.onClick(() => {
+      tg.sendData("Кошелёк подключён!"); // Пример отправки данных боту
+    });
+
+    // Инициализация TonConnect UI
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: 'https://vladimirs44.github.io/tonconnect-manifest.json',
+      buttonRootId: 'connect'
+    });
+
+    // Проверка данных пользователя Telegram (для отладки)
+    if (tg.initDataUnsafe.user) {
+      console.log("Пользователь Telegram:", tg.initDataUnsafe.user);
+    }
+
+    // Пример обработки подключения кошелька
+    tonConnectUI.onStatusChange((wallet) => {
+      if (wallet) {
+        console.log("Кошелёк подключён:", wallet);
+        tg.MainButton.text = "Кошелёк подключён!";
+      } else {
+        console.log("Кошелёк отключён");
+        tg.MainButton.text = "Подтвердить";
+      }
+    });
+  </script>
+</body>
+</html>
